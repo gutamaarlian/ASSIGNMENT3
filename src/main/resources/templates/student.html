@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="fragment/head :: head"></div>
+<body>
+<div class="container">
+    <br><br>
+    <h1 class="title mt-3" align="center">Tabel Mahasiswa</h1>
+    <br><br>
+    <div align="right">
+        <button class="btn btn-sm btn-success mr-2" data-toggle="modal" data-target="#addMahasiswa">INPUT
+        </button>
+    </div>
+    <table class="table table-hover mt-1">
+        <thead class="thead-dark">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>NIM</th>
+            <th>Jurusan</th>
+            <th>IPK</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="pg, i : ${page}">
+            <td><p th:text="${((page.number)*page.size)+(i.index)+1}"></p></td>
+            <td data-title="Name">
+                <p th:text="${pg.name}">
+
+                </p>
+            </td>
+            <td data-title="NIM">
+                <p th:text="${pg.nim}">
+
+                </p>
+            </td>
+            <td data-title="Jurusan">
+                <p th:text="${pg.jurusan}">
+
+                </p>
+            </td>
+            <td data-title="IPK">
+                <p th:text="${pg.ipk}">
+
+                </p>
+            </td>
+            <td data-title="Action">
+                <button class="btn btn-sm btn-success mr-2" data-toggle="modal"
+                        th:attr="data-target='#DetailMahasiswa'+${pg.id}">
+                    Detail
+                </button>
+                <button class="btn btn-sm btn-primary mr-2" data-toggle="modal"
+                        th:attr="data-target='#EditMahasiswa'+${pg.id}">
+                    Update
+                </button>
+                <button class="btn btn-sm btn-danger " data-toggle="modal"
+                        th:attr="data-target='#DeleteMahasiswa'+${pg.id}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+    <div class="pagination-div">
+            <span>
+               Show Item&nbsp;
+            </span>
+        <span>
+                [[${page.number*page.size+1}]]
+            </span>
+        <span>
+                -
+            </span>
+        <span th:if="${page.number*page.size+page.size < page.totalElements}">
+                [[${page.number*page.size+page.size}]]
+            </span>
+        <span th:unless="${page.number*page.size+page.size < page.totalElements}">
+                [[${page.totalElements}]]
+            </span>
+
+    </div>
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:if="${page.hasPrevious()}">
+                <a th:href="@{/student(page=${page.number-1},size=${page.size})}" class="page-link">Previous</a>
+            </li>
+            <th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">
+                <li th:if="${page.number == i}" class="page-item active"><a href="#" class="page-link">[[${i}+1]]</a>
+                </li>
+                <li th:unless="${page.number == i}" class="page-item">
+                    <a th:href="@{/student(page=${i},size=${page.size})}" class="page-link">[[${i}+1]]</a>
+                </li>
+            </th:block>
+            <li class="page-item" th:if="${page.hasNext()}">
+                <a th:href="@{/student(page=${page.number+1},size=${page.size})}" class="page-link">Next</a>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- Modal -->
+    <div th:each="pg, i : ${page}" class="p-0 m-0">
+        <div class="modal fade" th:attr="id='DetailMahasiswa'+${pg.id}" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="example">Detail Mahsiswa</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="col-md-6 modal-body">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td>Nama</td>
+                                <td>: [[${pg.name}]]</td>
+                            </tr>
+                            <tr>
+                                <td>NIM</td>
+                                <td>: [[${pg.nim}]]</td>
+                            </tr>
+                            <tr>
+                                <td>Jurusan</td>
+                                <td>: [[${pg.jurusan}]]</td>
+                            </tr>
+                            <tr>
+                                <td>IPK</td>
+                                <td>: [[${pg.ipk}]]</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div  class="p-0 m-0">
+        <div class="modal fade" id="addMahasiswa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document" >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="a">Input Data Mahasiswa</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form th:action="@{/student/add}" th:method="post">
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label class="col-form-label">Nama:</label>
+                                <input type="text" class="form-control" th:name="name" >
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">NIM:</label>
+                                <input type="text" class="form-control" th:name="nim">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Jurusan:</label>
+                                <input type="text" class="form-control" th:name="jurusan">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">IPK:</label>
+                                <input type="text" class="form-control" th:name="ipk">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Insert</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--MODAL UPDATE-->
+    <div th:each="pg, i : ${page}" class="p-0 m-0">
+        <div class="modal fade" th:attr="id='EditMahasiswa'+${pg.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form th:action="@{/student/}+${pg.id}" th:method="post">
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label class="col-form-label">Nama:</label>
+                                <input type="text" class="form-control" th:name="name" th:attr="value = ${pg.name}">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">NIM:</label>
+                                <input type="text" class="form-control" th:name="nim" th:attr="value = ${pg.nim}">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Jurusan:</label>
+                                <input type="text" class="form-control" th:name="jurusan" th:attr="value = ${pg.jurusan}">
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">IPK:</label>
+                                <input type="text" class="form-control" th:name="ipk" th:attr="value = ${pg.ipk}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:each="pg, i : ${page}" class="p-0 m-0">
+        <div class="modal fade" th:attr="id='DeleteMahasiswa'+${pg.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="">Delete</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form th:action="@{/student/delete/}+${pg.id}" th:method="post">
+                        <div class="modal-body">
+                            <h4>Apakah anda yakin menghapus [[${pg.name}]] ??</h4>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+                            <button type="submit" class="btn btn-danger">Ya</button>
+                        </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<br><br><br>
+<div align="center"><footer>Made with <strong>STRESSED</strong> by Tama</footer></div>
+<footer></footer>
+</body>
+<script src="js/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="js/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</html>
